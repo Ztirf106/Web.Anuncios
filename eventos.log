@@ -1,0 +1,30 @@
+
+2025-07-21T02:10:28.467Z - Usuario: admin01 - Acción: Cierre de sesión - Detalles: {}
+2025-07-21T02:10:34.348Z - Usuario: admin01 - Acción: Inicio de sesión - Detalles: {}
+2025-07-21T02:16:27.473Z - Usuario: admin01 - Acción: Inicio de sesión - Detalles: {}
+2025-07-21T02:16:32.510Z - Usuario: admin01 - Acción: Reserva creada - Detalles: {"fecha":"2025-07-30","hora":"09:00-12:00","proposito":"paseo"}
+2025-07-21T02:16:37.078Z - Usuario: admin01 - Acción: Cierre de sesión - Detalles: {}
+2025-07-21T02:17:33.024Z - Usuario: null - Acción: Cierre de sesión - Detalles: {}
+2025-07-21T02:17:45.052Z - Usuario: A101 - Acción: Inicio de sesión - Detalles: {}
+2025-07-21T02:17:55.158Z - Usuario: A101 - Acción: Cierre de sesión - Detalles: {}
+2025-07-21T02:18:00.847Z - Usuario: admin01 - Acción: Inicio de sesión - Detalles: {}
+2025-07-21T02:18:06.121Z - Usuario: admin01 - Acción: Reserva creada - Detalles: {"fecha":"2025-07-29","hora":"09:00-12:00","proposito":"paseo"}
+2025-07-21T02:22:49.445Z - Usuario: A101 - Acción: Inicio de sesión - Detalles: {}
+2025-07-21T02:22:56.011Z - Usuario: A101 - Acción: Reserva creada - Detalles: {"fecha":"2025-07-29","hora":"09:00-12:00","proposito":"paseo"}
+2025-07-21T02:23:00.962Z - Usuario: A101 - Acción: Cierre de sesión - Detalles: {}
+2025-07-22T00:40:51.647Z - Usuario: testuser1753144851565 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T00:56:58.824Z - Usuario: testuser1753145818748 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T00:59:00.640Z - Usuario: testuser1753145940564 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:00:15.014Z - Usuario: testuser1753146014939 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:00:43.836Z - Usuario: testuser1753146043761 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:01:24.662Z - Usuario: testuser1753146084589 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:03:25.671Z - Usuario: testuser1753146205597 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:04:30.801Z - Usuario: testuser1753146270717 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:06:49.139Z - Usuario: testuser1753146409065 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:07:54.882Z - Usuario: testuser1753146474806 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:09:10.007Z - Usuario: testuser1753146549927 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T01:10:18.610Z - Usuario: admin01 - Acción: Inicio de sesión - Detalles: {}
+2025-07-22T01:10:26.047Z - Usuario: admin01 - Acción: Reserva creada - Detalles: {"fecha":"2025-07-30","hora":"09:00-12:00","proposito":"paseo"}
+2025-07-22T01:10:30.102Z - Usuario: admin01 - Acción: Cierre de sesión - Detalles: {}
+2025-07-22T01:15:48.398Z - Usuario: testuser1753146948324 - Acción: Registro de nuevo usuario - Detalles: {}
+2025-07-22T03:14:38.321Z - Usuario: admin01 - Acción: Inicio de sesión - Detalles: {}

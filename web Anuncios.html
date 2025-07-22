@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Condominio - Sistema de Gestión</title>    
+    <link rel="stylesheet" href="styles.css">   
+
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="nav">
+                <h1>🏢 Condominio Portal</h1>
+                <div class="nav-buttons" id="navButtons">
+                    <!-- Buttons will be dynamically added -->
+                </div>
+            </div>
+            <div class="user-info" id="userInfo"></div>
+        </div>
+
+        <!-- Login Page -->
+        <div class="page active" id="loginPage">
+            <div class="login-form">
+                <h2>🔐 Iniciar Sesión</h2>
+                <form id="loginForm" method="POST" action="/login">
+                <div class="form-group">
+                <label for="userCode">Código de Usuario:</label>
+                <input type="text" id="userCode" name="username" required placeholder="Ej: admin01, A101">
+                </div>
+                <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+             <button type="submit" class="btn btn-primary">Ingresar</button>
+                </form>
+
+                
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboardPage">
+            <h2>🏠 Panel Principal</h2>
+            <div class="dashboard-cards">
+                <div class="card" onclick="showPage('announcementsPage')">
+                    <h3>📢 Anuncios</h3>
+                    <p>Ver y publicar anuncios del condominio</p>
+                </div>
+                <div class="card" onclick="showPage('sumAreaPage')">
+                    <h3>🎉 Área SUM</h3>
+                    <p>Reservar y consultar el área de eventos</p>
+                </div>
+            </div>
+            
+            <h3>📌 Anuncios Recientes</h3>
+            <div id="recentAnnouncements"></div>
+        </div>
+
+        <!-- Announcements Page -->
+        <div class="page" id="announcementsPage">
+            <h2>📢 Anuncios</h2>
+            <div class="announcements-section">
+                <div>
+                    <div id="announcementsList"></div>
+                </div>
+                <div>
+                    <h3>✍️ Publicar Anuncio</h3>
+                    <form id="announcementForm">
+                        <div class="form-group">
+                            <label for="announcementType">Tipo:</label>
+                            <select id="announcementType" required>
+                                <option value="general">General</option>
+                                <option value="venta">Venta</option>
+                                <option value="compra">Compra</option>
+                                <option value="servicio">Servicio</option>
+                                <option value="aviso">Aviso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="announcementContent">Contenido:</label>
+                            <textarea id="announcementContent" required rows="4" placeholder="Escribe tu anuncio aquí..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Publicar Anuncio</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUM Area Page -->
+        <div class="page" id="sumAreaPage">
+            <h2>🎉 Área SUM - Reservas</h2>
+            <div id="sumAreaContent">
+                <div class="calendar" id="calendar"></div>
+                <div id="reservationForm" class="hidden">
+                    <h3>Nueva Reserva</h3>
+                    <form id="newReservationForm">
+                        <div class="form-group">
+                            <label for="reservationDate">Fecha:</label>
+                            <input type="date" id="reservationDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservationTime">Hora:</label>
+                            <select id="reservationTime" required>
+                                <option value="09:00-12:00">9:00 AM - 12:00 PM</option>
+                                <option value="13:00-16:00">1:00 PM - 4:00 PM</option>
+                                <option value="17:00-20:00">5:00 PM - 8:00 PM</option>
+                                <option value="21:00-23:00">9:00 PM - 11:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservationPurpose">Propósito:</label>
+                            <input type="text" id="reservationPurpose" required placeholder="Ej: Reunión familiar">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Crear Reserva</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelReservation()">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for reservation details -->
+    <div class="modal" id="reservationModal">
+        <div class="modal-content">
+            <h3>Detalles de Reserva</h3>
+            <div id="reservationDetails"></div>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>
+                <button class="btn btn-danger" id="deleteReservationBtn" onclick="deleteReservation()" style="display: none;">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let isAdmin = false;
+        let announcements = [];
+        let reservations = [];
+        let selectedReservation = null;
+
+        // Initialize data
+        function initializeData() {
+            // Sample announcements
+            announcements = [
+                {
+                    id: 1,
+                    user: 'admin01',
+                    type: 'aviso',
+                    content: 'Mantenimiento de ascensores programado para el sábado 20 de julio',
+                    date: new Date('2025-07-15'),
+                    official: true
+                },
+                {
+                    id: 2,
+                    user: 'A105',
+                    type: 'venta',
+                    content: 'Vendo bicicleta estática en excelente estado. Precio: S/ 300',
+                    date: new Date('2025-07-16'),
+                    official: false
+                }
+            ];
+
+            // Sample reservations
+            reservations = [
+                {
+                    id: 1,
+                    user: 'A103',
+                    date: '2025-07-20',
+                    time: '17:00-20:00',
+                    purpose: 'Cumpleaños familiar'
+                },
+                {
+                    id: 2,
+                    user: 'admin01',
+                    date: '2025-07-25',
+                    time: '09:00-12:00',
+                    purpose: 'Reunión de condóminos'
+                }
+            ];
+        }
+
+        // Authentication
+        // Authentication segura usando Node.js
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const userCode = document.getElementById('userCode').value;
+    const password = document.getElementById('password').value;
+
+    try {
+        const res = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario: userCode, contrasena: password })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+            currentUser = userCode;
+            isAdmin = (result.tipo === 'Administrador');
+            login();
+        } else {
+            alert('❌ Usuario o contraseña incorrectos');
+        }
+
+    } catch (error) {
+        console.error("Error de conexión con el servidor:", error);
+        alert("Error de conexión con el servidor");
+    }
+});
+
+        function login() {
+            updateNavigation();
+            showPage('dashboardPage');
+            loadDashboard();
+        }
+
+        function logout() {
+        fetch(`/logout?usuario=${currentUser}`)
+        .then(() => {
+            currentUser = null;
+            showPage('loginPage');
+        });
+}
+
+        function updateNavigation() {
+            const navButtons = document.getElementById('navButtons');
+            const userInfo = document.getElementById('userInfo');
+
+            if (currentUser) {
+                userInfo.innerHTML = `Conectado como: <strong>${currentUser}</strong> ${isAdmin ? '(Administrador)' : '(Residente)'}`;
+                navButtons.innerHTML = `
+                    <button class="btn btn-secondary" onclick="showPage('dashboardPage')">Inicio</button>
+                    <button class="btn btn-secondary" onclick="showPage('announcementsPage')">Anuncios</button>
+                    <button class="btn btn-secondary" onclick="showPage('sumAreaPage')">Área SUM</button>
+                    <button class="btn btn-danger" onclick="logout()">Salir</button>
+                `;
+            } else {
+                userInfo.innerHTML = '';
+                navButtons.innerHTML = '';
+            }
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+
+            if (pageId === 'announcementsPage') {
+                loadAnnouncements();
+            } else if (pageId === 'sumAreaPage') {
+                loadSumArea();
+            }
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            const recentContainer = document.getElementById('recentAnnouncements');
+            const recentAnnouncements = announcements
+                .sort((a, b) => b.date - a.date)
+                .slice(0, 3);
+
+            recentContainer.innerHTML = recentAnnouncements.map(ann => `
+                <div class="announcement ${ann.official ? 'official' : ''}">
+                    <div class="announcement-header">
+                        <div class="announcement-meta">${ann.user} • ${ann.type} • ${ann.date.toLocaleDateString()}</div>
+                        ${ann.official ? '<span class="official-badge">OFICIAL</span>' : ''}
+                    </div>
+                    <div>${ann.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // Announcements
+        function loadAnnouncements() {
+            const container = document.getElementById('announcementsList');
+            const sortedAnnouncements = announcements
+                .sort((a, b) => {
+                    if (a.official && !b.official) return -1;
+                    if (!a.official && b.official) return 1;
+                    return b.date - a.date;
+                });
+
+            container.innerHTML = sortedAnnouncements.map(ann => `
+                <div class="announcement ${ann.official ? 'official' : ''}">
+                    <div class="announcement-header">
+                        <div class="announcement-meta">${ann.user} • ${ann.type} • ${ann.date.toLocaleDateString()}</div>
+                        <div>
+                            ${ann.official ? '<span class="official-badge">OFICIAL</span>' : ''}
+                            ${isAdmin ? `<button class="btn btn-danger" style="padding: 4px 8px; font-size: 10px; margin-left: 10px;" onclick="deleteAnnouncement(${ann.id})">Eliminar</button>` : ''}
+                        </div>
+                    </div>
+                    <div>${ann.content}</div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('announcementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const type = document.getElementById('announcementType').value;
+            const content = document.getElementById('announcementContent').value;
+
+            const newAnnouncement = {
+                id: Date.now(),
+                user: currentUser,
+                type: type,
+                content: content,
+                date: new Date(),
+                official: isAdmin
+            };
+
+            announcements.push(newAnnouncement);
+            document.getElementById('announcementContent').value = '';
+            loadAnnouncements();
+        });
+
+        function deleteAnnouncement(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este anuncio?')) {
+                announcements = announcements.filter(ann => ann.id !== id);
+                loadAnnouncements();
+            }
+        }
+
+        // SUM Area
+        function loadSumArea() {
+    generateCalendar();
+    // Mostrar formulario para cualquier usuario autenticado
+    if (currentUser) {
+        document.getElementById('reservationForm').classList.remove('hidden');
+    } else {
+        document.getElementById('reservationForm').classList.add('hidden');
+    }
+}
+
+document.getElementById('newReservationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!currentUser) {
+        alert('Debes iniciar sesión para hacer una reserva');
+        return;
+    }
+    
+    const date = document.getElementById('reservationDate').value;
+    const time = document.getElementById('reservationTime').value;
+    const purpose = document.getElementById('reservationPurpose').value;
+
+    try {
+        const response = await fetch('/reservar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                usuario: currentUser,
+                fecha: date,
+                hora: time,
+                proposito: purpose
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Reserva exitosa');
+            this.reset();
+            generateCalendar(); // Recargar calendario desde el backend
+        } else {
+            alert('Error al reservar: ' + (result.message || ''));
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert('Error de conexión');
+    }
+});
+
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+
+            // Calendar header
+            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+            calendar.innerHTML = `
+                <div class="calendar-header" style="grid-column: 1 / -1;">
+                    ${monthNames[month]} ${year}
+                </div>
+                ${daysOfWeek.map(day => `<div class="calendar-header">${day}</div>`).join('')}
+            `;
+
+            // Calendar days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const dayReservations = reservations.filter(res => res.date === dateStr);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = `calendar-day ${currentDate.getMonth() !== month ? 'other-month' : ''}`;
+                dayElement.innerHTML = `
+                    <div>${currentDate.getDate()}</div>
+                    ${dayReservations.map(res => `
+                        <div class="reservation ${res.user.startsWith('admin') ? 'admin' : ''}" 
+                             onclick="showReservationDetails(${res.id})">
+                            ${res.time} - ${res.user}
+                        </div>
+                    `).join('')}
+                `;
+
+                if (currentUser && currentDate >= today) {
+                    dayElement.style.cursor = 'pointer';
+                    dayElement.addEventListener('click', () => openReservationForm(dateStr));
+                    }
+
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        function openReservationForm(date) {
+            document.getElementById('reservationDate').value = date;
+            document.getElementById('reservationForm').scrollIntoView();
+        }
+
+        function cancelReservation() {
+            document.getElementById('newReservationForm').reset();
+        }
+
+        document.getElementById('newReservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const date = document.getElementById('reservationDate').value;
+            const time = document.getElementById('reservationTime').value;
+            const purpose = document.getElementById('reservationPurpose').value;
+
+            // Check for conflicts
+            const conflictExists = reservations.some(res => 
+                res.date === date && res.time === time
+            );
+
+            if (conflictExists) {
+                alert('Ya existe una reserva para esa fecha y hora');
+                return;
+            }
+
+            const newReservation = {
+                id: Date.now(),
+                user: currentUser,
+                date: date,
+                time: time,
+                purpose: purpose
+            };
+
+            reservations.push(newReservation);
+            this.reset();
+            generateCalendar();
+        });
+
+        function showReservationDetails(id) {
+            const reservation = reservations.find(res => res.id === id);
+            selectedReservation = id;
+    
+            document.getElementById('reservationDetails').innerHTML = `
+                <p><strong>Usuario:</strong> ${reservation.user}</p>
+                <p><strong>Fecha:</strong> ${new Date(reservation.date).toLocaleDateString()}</p>
+                <p><strong>Hora:</strong> ${reservation.time}</p>
+                <p><strong>Propósito:</strong> ${reservation.purpose}</p>
+    `;
+
+            // Mostrar botón de eliminar solo si es admin o si es el usuario que creó la reserva
+            const canDelete = isAdmin || reservation.user === currentUser;
+            document.getElementById('deleteReservationBtn').style.display = canDelete ? 'inline-block' : 'none';
+
+            document.getElementById('reservationModal').style.display = 'block';
+}
+
+        function closeModal() {
+            document.getElementById('reservationModal').style.display = 'none';
+            selectedReservation = null;
+        }
+
+        function deleteReservation() {
+            if (selectedReservation && confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
+                reservations = reservations.filter(res => res.id !== selectedReservation);
+                closeModal();
+                generateCalendar();
+            }
+        }
+
+        // Initialize the application
+        initializeData();
+        updateNavigation();
+    </script>
+</body>
+</html>
